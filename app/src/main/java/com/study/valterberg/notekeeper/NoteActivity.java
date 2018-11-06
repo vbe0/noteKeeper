@@ -1,10 +1,12 @@
 package com.study.valterberg.notekeeper;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -14,6 +16,7 @@ import android.widget.Spinner;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
+    public final String TAG = getClass().getSimpleName();
     public static final String NOTE_POSITION = "com.study.valterberg.notekeeper.NOTE_POSITION";
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.study.valterberg.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE = "com.study.valterberg.notekeeper.ORIGINAL_NOTE_TITLE";
@@ -58,6 +61,8 @@ public class NoteActivity extends AppCompatActivity {
         } else {
             displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
         }
+
+        Log.d(TAG, "onCreate");
 
     }
 
@@ -105,6 +110,7 @@ public class NoteActivity extends AppCompatActivity {
         }else {
             saveNote();
         }
+        Log.d(TAG, "onPause");
     }
 
     private void storePreviousNoteValues() {
@@ -138,13 +144,13 @@ public class NoteActivity extends AppCompatActivity {
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        int position = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
-        mIsNewNote = position == POSITION_NOT_SET;
-        if (!mIsNewNote) {
+        mNotePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
+        mIsNewNote = mNotePosition == POSITION_NOT_SET;
+        if (mIsNewNote) {
             createNewNote();
-        } else {
-            mNote = DataManager.getInstance().getNotes().get(position);
         }
+        Log.i(TAG, "mNotePosition: " + mNotePosition);
+        mNote = DataManager.getInstance().getNotes().get(mNotePosition);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
